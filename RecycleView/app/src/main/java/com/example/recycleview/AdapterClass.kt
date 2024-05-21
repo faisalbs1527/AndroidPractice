@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 
-class AdapterClass(private val dataList: ArrayList<DataClass>) :
+class AdapterClass(private val dataList: List<DataClass>) :
     RecyclerView.Adapter<AdapterClass.viewHolderClass>() {
 
     override fun onCreateViewHolder(
@@ -23,8 +23,8 @@ class AdapterClass(private val dataList: ArrayList<DataClass>) :
 
     override fun onBindViewHolder(holder: AdapterClass.viewHolderClass, position: Int) {
         val ItemsViewModel = dataList[position]
-        holder.rvImage.setImageResource(ItemsViewModel.dataImage)
-        holder.rvTitle.text = ItemsViewModel.dataTitle
+        holder.title.text = ItemsViewModel.title
+        holder.id.text = ItemsViewModel.id.toString()
     }
 
     override fun getItemCount(): Int {
@@ -32,7 +32,7 @@ class AdapterClass(private val dataList: ArrayList<DataClass>) :
     }
 
     class viewHolderClass(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val rvImage: ImageView = itemView.findViewById(R.id.imageView)
-        val rvTitle: TextView = itemView.findViewById(R.id.textView)
+        val title: TextView = itemView.findViewById(R.id.title)
+        val id: TextView = itemView.findViewById(R.id.id)
     }
 }

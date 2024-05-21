@@ -1,5 +1,8 @@
 package com.example.recycleview
 
-data class DataClass(var dataImage:Int, var dataTitle: String){
+import android.icu.text.CaseMap.Title
 
-}
+data class DataClass(
+    val id: Int,
+    val title: String
+)

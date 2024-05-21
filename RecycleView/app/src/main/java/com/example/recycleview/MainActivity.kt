@@ -3,19 +3,23 @@ package com.example.recycleview
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.provider.ContactsContract.Data
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity() {
 
     private  lateinit var  recyclerView: RecyclerView
-    private lateinit var data: ArrayList<DataClass>
-    lateinit var imageList:Array<Int>
-    lateinit var titleList: Array<String>
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,59 +32,33 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        imageList= arrayOf(
-            R.drawable.person,
-            R.drawable.photos,
-            R.drawable.reddit,
-            R.drawable.search,
-            R.drawable.approve,
-            R.drawable.list_view,
-            R.drawable.location,
-            R.drawable.setting,
-            R.drawable.website,
-            R.drawable.phone)
-        titleList= arrayOf(
-            "Person",
-            "Photos",
-            "Reddit",
-            "Search",
-            "Approve",
-            "List View",
-            "Location",
-            "Setting",
-            "Website",
-            "Phone",
-            )
-
-//        data.add(DataClass(R.drawable.person,"Person"))
-//        data.add(DataClass(R.drawable.photos,"Photos"))
-//        data.add(DataClass(R.drawable.reddit,"Reddit"))
-//        data.add(DataClass(R.drawable.search,"Search"))
-//        data.add(DataClass(R.drawable.approve,"Approve"))
-//        data.add(DataClass(R.drawable.list_view,"List View"))
-//        data.add(DataClass(R.drawable.location,"Location"))
-//        data.add(DataClass(R.drawable.setting,"Setting"))
-//        data.add(DataClass(R.drawable.website,"Website"))
-//        data.add(DataClass(R.drawable.phone,"Phone"))
-
-//        val adapter = AdapterClass(data)
-//        recyclerView.layoutManager = LinearLayoutManager(this)
-//        recyclerView.setHasFixedSize(true)
-//        recyclerView.adapter = adapter
-
         recyclerView = findViewById<RecyclerView>(R.id.recycle_view)
-        recyclerView.layoutManager= LinearLayoutManager(this)
         recyclerView.setHasFixedSize(true)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        getMyData()
 
-        data = arrayListOf<DataClass>()
-        getData()
     }
+    private fun getMyData(){
+        val BASE_URL = "https://jsonplaceholder.typicode.com/"
+        val retrofitBuilder = Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create())
+            .baseUrl(BASE_URL)
+            .build()
+            .create(ApiInterface::class.java)
 
-    private fun getData(){
-        for(i in imageList.indices){
-            val dataClass = DataClass(imageList[i],titleList[i])
-            data.add(dataClass)
-        }
-        recyclerView.adapter=AdapterClass(data)
+        val retrofitData = retrofitBuilder.getData()
+
+        retrofitData.enqueue(object : Callback<List<DataClass>?> {
+            override fun onResponse(p0: Call<List<DataClass>?>, p1: Response<List<DataClass>?>) {
+                val responseBody = p1.body()!!
+
+                recyclerView.adapter = AdapterClass(responseBody)
+
+            }
+
+            override fun onFailure(p0: Call<List<DataClass>?>, p1: Throwable) {
+                Log.d("MainActivity","OnFailure: "+p1.message)
+            }
+        })
     }
 }
