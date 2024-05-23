@@ -8,8 +8,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.bumptech.glide.Glide
+import com.example.recycleview.model.Data
+import com.example.recycleview.model.ProductClass
 
-class AdapterClass(private val dataList: List<DataClass>) :
+class AdapterClass(private val dataList: List<Data>) :
     RecyclerView.Adapter<AdapterClass.viewHolderClass>() {
 
     override fun onCreateViewHolder(
@@ -23,8 +26,12 @@ class AdapterClass(private val dataList: List<DataClass>) :
 
     override fun onBindViewHolder(holder: AdapterClass.viewHolderClass, position: Int) {
         val ItemsViewModel = dataList[position]
-        holder.title.text = ItemsViewModel.title
-        holder.id.text = ItemsViewModel.id.toString()
+        holder.title.text = ItemsViewModel.ProductPrice.Price
+        holder.id.text = ItemsViewModel.Name
+
+        Glide.with(holder.image.context)
+            .load(ItemsViewModel.PictureModels[0].ImageUrl)
+            .into(holder.image)
     }
 
     override fun getItemCount(): Int {
@@ -34,5 +41,6 @@ class AdapterClass(private val dataList: List<DataClass>) :
     class viewHolderClass(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val title: TextView = itemView.findViewById(R.id.title)
         val id: TextView = itemView.findViewById(R.id.id)
+        val image : ImageView = itemView.findViewById(R.id.imageView)
     }
 }

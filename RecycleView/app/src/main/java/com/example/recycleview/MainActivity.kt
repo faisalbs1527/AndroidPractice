@@ -11,6 +11,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.recycleview.model.ProductClass
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -39,24 +40,24 @@ class MainActivity : AppCompatActivity() {
 
     }
     private fun getMyData(){
-        val BASE_URL = "https://jsonplaceholder.typicode.com/"
-        val retrofitBuilder = Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl(BASE_URL)
-            .build()
-            .create(ApiInterface::class.java)
 
-        val retrofitData = retrofitBuilder.getData()
+        val apiService = ApiClient.retrofitBuilder.create(ApiInterface::class.java)
 
-        retrofitData.enqueue(object : Callback<List<DataClass>?> {
-            override fun onResponse(p0: Call<List<DataClass>?>, p1: Response<List<DataClass>?>) {
+        val retrofitData = apiService.getData(
+            contentType = "application/json",
+            deviceId = "faisal's android",
+            nst = "eyJhbGciOiJIUzUxMiJ9.eyJOU1RfS0VZIjoiYm05d1UzUmhkR2x2YmxSdmEyVnUifQ.adqiIzFjqZdpJw5uHOHjE5qw2UvCDH2FwMmwlYvr5ljKyPG65ZQe_4wb8NYEQFXmyZZyVu-77xd5Njn310cjMw"
+        )
+
+        retrofitData.enqueue(object : Callback<ProductClass?> {
+            override fun onResponse(p0: Call<ProductClass?>, p1: Response<ProductClass?>) {
                 val responseBody = p1.body()!!
 
-                recyclerView.adapter = AdapterClass(responseBody)
+                recyclerView.adapter = AdapterClass(responseBody.Data)
 
             }
 
-            override fun onFailure(p0: Call<List<DataClass>?>, p1: Throwable) {
+            override fun onFailure(p0: Call<ProductClass?>, p1: Throwable) {
                 Log.d("MainActivity","OnFailure: "+p1.message)
             }
         })
