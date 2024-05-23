@@ -6,9 +6,11 @@ import android.provider.ContactsContract.Data
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.recycleview.model.ProductClass
@@ -21,6 +23,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 class MainActivity : AppCompatActivity() {
 
     private  lateinit var  recyclerView: RecyclerView
+    private val productViewModel: ProductViewModel by viewModels()
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,23 +43,14 @@ class MainActivity : AppCompatActivity() {
 
     }
     private fun getMyData(){
+        productViewModel.fetchProducts()
 
+        productViewModel.products.observe(this, Observer { products ->
+            recyclerView.adapter = AdapterClass(products.Data)
+        })
 
-        val apiService = ApiClient.getRetrofit().create(ApiInterface::class.java)
-
-        val retrofitData = apiService.getData()
-
-        retrofitData.enqueue(object : Callback<ProductClass?> {
-            override fun onResponse(p0: Call<ProductClass?>, p1: Response<ProductClass?>) {
-                val responseBody = p1.body()!!
-
-                recyclerView.adapter = AdapterClass(responseBody.Data)
-
-            }
-
-            override fun onFailure(p0: Call<ProductClass?>, p1: Throwable) {
-                Log.d("MainActivity","OnFailure: "+p1.message)
-            }
+        productViewModel.error.observe(this, Observer { errorMessage ->
+            Toast.makeText(this, errorMessage , Toast.LENGTH_SHORT).show()
         })
     }
 }
