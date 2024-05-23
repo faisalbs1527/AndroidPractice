@@ -41,13 +41,10 @@ class MainActivity : AppCompatActivity() {
     }
     private fun getMyData(){
 
-        val apiService = ApiClient.retrofitBuilder.create(ApiInterface::class.java)
 
-        val retrofitData = apiService.getData(
-            contentType = "application/json",
-            deviceId = "faisal's android",
-            nst = "eyJhbGciOiJIUzUxMiJ9.eyJOU1RfS0VZIjoiYm05d1UzUmhkR2x2YmxSdmEyVnUifQ.adqiIzFjqZdpJw5uHOHjE5qw2UvCDH2FwMmwlYvr5ljKyPG65ZQe_4wb8NYEQFXmyZZyVu-77xd5Njn310cjMw"
-        )
+        val apiService = ApiClient.getRetrofit().create(ApiInterface::class.java)
+
+        val retrofitData = apiService.getData()
 
         retrofitData.enqueue(object : Callback<ProductClass?> {
             override fun onResponse(p0: Call<ProductClass?>, p1: Response<ProductClass?>) {

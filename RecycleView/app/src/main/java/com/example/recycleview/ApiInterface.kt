@@ -12,10 +12,6 @@ interface ApiInterface {
 
 
     @GET(value = "home/featureproducts")
-    fun getData(
-        @Header("Content-Type") contentType : String,
-        @Header("DeviceId") deviceId : String,
-        @Header("NST") nst : String
-    ) : Call<ProductClass>
+    fun getData() : Call<ProductClass>
 
 }
