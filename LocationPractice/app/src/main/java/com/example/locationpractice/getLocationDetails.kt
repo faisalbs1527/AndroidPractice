@@ -11,7 +11,7 @@ fun getLocationDetails(activity: Activity, lat: Double, lng: Double) {
     val url =
         "https://nominatim.openstreetmap.org/reverse?format=json&lat=$lat&lon=$lng&addressdetails=1"
 
-    val request = Request.Builder().url(url).build()
+    val request = Request.Builder().url(url).addHeader("Accept-Language", "en").build()
     client.newCall(request).enqueue(object : okhttp3.Callback {
         override fun onFailure(call: okhttp3.Call, e: java.io.IOException) {
             e.printStackTrace()
