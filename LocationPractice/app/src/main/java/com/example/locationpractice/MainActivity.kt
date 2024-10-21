@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -61,7 +62,7 @@ class MainActivity : ComponentActivity() {
                     // on below line we are specifying modifier and color for our app
                     modifier = Modifier.fillMaxSize(), color = Color.White
                 ) {
-                    OsmdroidMapView(this)
+                    OsmdroidMapView(this, LocalContext.current)
                 }
             }
         }
@@ -69,10 +70,43 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun OsmdroidMapView(activity: Activity) {
+fun OsmdroidMapView(activity: Activity,context: Context) {
     var geoPoint by remember {
         mutableStateOf(GeoPoint(23.7104, 90.40744))
     }
+    RequestLocationPermission(
+        onPermissionGranted = {
+            Toast.makeText(context,"Permission Granted!!",Toast.LENGTH_SHORT).show()
+            GetLocation.getLastUserLocation(
+                onGetLastLocationSuccess = {
+                    geoPoint = GeoPoint(it.first,it.second)
+                    println("from last")
+                },
+                onGetLastLocationFailed = { exception ->
+                },
+                onGetLastLocationIsNull = {
+                    // Attempt to get the current user location
+                    GetLocation.getCurrentLocation(
+                        onGetCurrentLocationSuccess = {
+                            geoPoint = GeoPoint(it.first,it.second)
+                            println("from current")
+                        },
+                        onGetCurrentLocationFailed = {
+                        },
+                        context = context
+                    )
+                },
+                context = context
+            )
+        },
+        onPermissionDenied = {
+            Toast.makeText(context,"Permission Denied!!",Toast.LENGTH_SHORT).show()
+        },
+        onPermissionsRevoked = {
+            Toast.makeText(context,"Permission Revoked!!",Toast.LENGTH_SHORT).show()
+        }
+    )
+    println(geoPoint)
     AndroidView(
         modifier = Modifier.fillMaxSize(),
         factory = { context ->
